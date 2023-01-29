@@ -24,11 +24,10 @@ python3 main.py @ mysubdomain mysecondsubdomain
 ```
 
 #### Docker Compose example
-
-You can also use docker compose for easy deployment. Make sure the image was built using the command explained in step 2
-.
-
-If you named your image differently, make sure to change it in the compose file
+The compose file builds the image directly.
+You can either use the environment variables directly in the yaml file or you can mount
+an .env file. In this example it uses the .env file which has to be created in the same
+directory as the docker-compose.yaml file.
 
 ```yaml
 version: '3.7'
@@ -36,11 +35,15 @@ version: '3.7'
 services:
   app:
     image: luatan/dyndnschecker
+    build: .
     container_name: dynDNSChecker
-    environment:
-      - API_KEY=<your_key>
-      - DOMAIN=<your_domain>
-    #command: python3 main.py @ mysubdomain # uncomment, if you need multiple subdomains checked
+#    environment: # uncomment if you want to use specific env values
+#      - API_KEY=${API_KEY}
+#      - DOMAIN=${DOMAIN}
+#      - INTERVAL=${INTERVAL}
+    volumes: # or use a .env file on your filesystem as source of environment variables
+      - .env:/.env
+#    command: python3 main.py @ mysubdomain # uncomment, if you need multiple subdomains checked
 
 ```
 
