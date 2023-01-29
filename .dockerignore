@@ -2,3 +2,5 @@
 .git
 .cache
 *.md
+.yaml
+.env

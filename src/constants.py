@@ -1,6 +1,9 @@
 import os
 import sys
 from enum import Enum
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def handle_hosts():

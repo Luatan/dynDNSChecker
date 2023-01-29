@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  app:
+    image: luatan/dyndnschecker
+    build: .
+    container_name: dynDNSChecker
+#    environment: # uncomment if you want to use specific env values
+#      - API_KEY=${API_KEY}
+#      - DOMAIN=${DOMAIN}
+#      - INTERVAL=${INTERVAL}
+    volumes: # or use a .env file on your filesystem as source of environment variables
+      - .env:/.env
+#    command: python3 main.py @ mysubdomain # uncomment, if you need multiple subdomains checked
