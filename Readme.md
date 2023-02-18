@@ -20,7 +20,7 @@ docker run -d \
 -e API_KEY=<your_key> \
 -e DOMAIN=<your_domain> \
 luatan/dyndnschecker \
-python3 main.py @ mysubdomain mysecondsubdomain
+@ mysubdomain mysecondsubdomain
 ```
 
 #### Docker Compose example
@@ -43,7 +43,7 @@ services:
 #      - INTERVAL=${INTERVAL}
     volumes: # or use a .env file on your filesystem as source of environment variables
       - .env:/.env
-#    command: python3 main.py @ mysubdomain # uncomment, if you need multiple subdomains checked
+#    command: @ mysubdomain # uncomment, if you need multiple subdomains checked
 
 ```
 
