@@ -2,7 +2,7 @@ import sys
 import time
 
 import signal
-from ipManagement import IpCheck
+from ip import Ip
 from cloudflareApi import Api
 from constants import Constants
 from logger import logger
@@ -30,7 +30,7 @@ def main():
             f"No Domain was entered. Use the environment variable DOMAIN to set the domain, which should be checked")
         sys.exit(1)
     api = Api()
-    ip_check = IpCheck()
+    ip_check = Ip()
 
     # make sure the current ip is set as record
     call_api(api, ip_check.current_ip)
@@ -38,7 +38,7 @@ def main():
     while True:
         logger.info(f"Waiting {Constants.INTERVAL.value / 60} minutes for next IP Check")
         time.sleep(Constants.INTERVAL.value)
-        if not ip_check.ip_changed():
+        if not ip_check.update():
             continue
         call_api(api, ip_check.current_ip)
 
@@ -46,5 +46,4 @@ def main():
 if __name__ == '__main__':
     # register interrupt handler
     signal.signal(signal.SIGINT, signal_handler)
-
     main()

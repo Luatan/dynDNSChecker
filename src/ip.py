@@ -2,18 +2,17 @@ import requests
 from logger import logger
 
 
-class IpCheck:
+class Ip:
     def __init__(self):
         self.current_ip = get_public_ip()
 
-    def ip_changed(self) -> bool:
+    def update(self) -> bool:
         public_ip = get_public_ip()
-        if public_ip == self.current_ip:
-            logger.info("No Changes to IP")
-            return False
-        logger.info(f"Public ip address changed to: {public_ip}")
-        self.current_ip = public_ip
-        return True
+        if public_ip != self.current_ip:
+            logger.info(f"Public ip address changed to: {public_ip}")
+            self.current_ip = public_ip
+            return True
+        return False
 
 
 def get_public_ip() -> str:
