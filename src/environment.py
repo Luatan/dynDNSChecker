@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def handle_hosts():
+def handle_args():
     arg_var = sys.argv[1:]
     if len(arg_var) == 0:
         return ['@']
@@ -19,4 +19,4 @@ class Constants(Enum):
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO').upper()
     INTERVAL = int(os.environ.get('INTERVAL', 180))
     PROVIDER = "Cloudflare"
-    HOSTS = handle_hosts()
+    HOSTS = handle_args()

@@ -3,8 +3,8 @@ import time
 
 import signal
 from ip import Ip
-from cloudflareApi import Api
-from constants import Constants
+from api.cloudflare import Api
+from environment import Constants
 from logger import logger
 
 
@@ -15,9 +15,9 @@ def signal_handler(sig, frame):
 
 def call_api(api, current_ip):
     for record in api.hosts.keys():
-        record_ip = api.check_record(record)
+        record_ip = api.get(record)
         if record_ip != current_ip:
-            api.update_record(record, current_ip)
+            api.update(record, current_ip)
 
 
 def main():

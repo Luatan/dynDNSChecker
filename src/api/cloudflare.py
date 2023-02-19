@@ -2,13 +2,14 @@ import sys
 import requests
 import json
 
-from constants import Constants
+from environment import Constants
 from http_methods import Method
 from logger import logger
 
 
 class Api:
     def __init__(self):
+        self.api_host = "https://api.cloudflare.com/client/v4/zones"
         self.api_key = Constants.API_KEY.value
         self.domain = Constants.DOMAIN.value
         self.hosts = self.__create_host_dict()
@@ -34,7 +35,7 @@ class Api:
 
     def update_zone_identification(self) -> str:
         logger.info(f"[{Constants.PROVIDER.value}] Fetching Zone info")
-        response = self.__request("https://api.cloudflare.com/client/v4/zones")
+        response = self.__request(self.api_host)
         for zone in response['result']:
             if zone['name'] == self.domain:
                 return zone['id']
@@ -57,15 +58,15 @@ class Api:
 
     def update_dns_identification(self) -> None:
         logger.info(f"[{Constants.PROVIDER.value}] Fetching DNS-Records")
-        response = self.__request(f"https://api.cloudflare.com/client/v4/zones/{self.zone_id}/dns_records")
+        response = self.__request(f"{self.api_host}/{self.zone_id}/dns_records")
         for dns in response['result']:
             if dns['name'] in self.hosts:
                 self.hosts[dns['name']] = dns['id']
 
-    def create_record(self, name, ip) -> None:
+    def create(self, name, ip) -> None:
         logger.info(f"Creating {name} for {ip}")
         response = self.__request(
-            url=f"https://api.cloudflare.com/client/v4/zones/{self.zone_id}/dns_records",
+            url=f"{self.api_host}/{self.zone_id}/dns_records",
             method=Method.POST,
             data=json.dumps({
                 "name": name,
@@ -76,21 +77,21 @@ class Api:
         self.hosts[response['result']['name']] = response['result']['id']
         logger.info(f"[{Constants.PROVIDER.value}] DNS-Record for {name} successfully created!")
 
-    def update_record(self, record_name: str, target_ip: str) -> None:
+    def update(self, record_name: str, target_ip: str) -> None:
         if self.hosts[record_name] == '':
             logger.info(f"Record does not exist yet. Creating instead")
-            self.create_record(record_name, target_ip)
+            self.create(record_name, target_ip)
             return
 
         self.__request(
-            url=f"https://api.cloudflare.com/client/v4/zones/{self.zone_id}/dns_records/{self.hosts[record_name]}",
+            url=f"{self.api_host}/{self.zone_id}/dns_records/{self.hosts[record_name]}",
             method=Method.PATCH,
             data=json.dumps({"content": target_ip}))
         logger.info(f"Updated {record_name} to {target_ip}")
 
-    def check_record(self, record_name: str) -> str:
+    def get(self, record_name: str) -> str:
         if self.hosts[record_name] == '':
             return ""
         response = self.__request(
-            f"https://api.cloudflare.com/client/v4/zones/{self.zone_id}/dns_records/{self.hosts[record_name]}")
+            f"{self.api_host}/{self.zone_id}/dns_records/{self.hosts[record_name]}")
         return response['result']['content']
